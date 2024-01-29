@@ -90,11 +90,11 @@ fn add_asset(assets: &mut Vec<Asset>) {
         .expect("Please type a number!");
 
     assets.push(Asset {
-        name: (name.to_string()),
-        type_of: (type_of.to_string()),
-        starting_balance: (starting_balance),
-        current_balance: (starting_balance as i32),
-        transactions: (Vec::new()),
+        name: name.to_string(),
+        type_of: type_of.to_string(),
+        starting_balance,
+        current_balance: starting_balance as i32,
+        transactions: Vec::new(),
     });
 }
 
@@ -128,12 +128,12 @@ fn add_liability(liabilities: &mut Vec<Liability>) {
     let interest_rate: u32 = interest_rate.trim().parse().expect("Please type a number!");
 
     liabilities.push(Liability {
-        name: (name.to_string()),
-        type_of: (type_of.to_string()),
-        starting_balance: (starting_balance),
-        current_balance: (starting_balance),
-        interest_rate: (interest_rate),
-        transactions: (Vec::new()),
+        name: name.to_string(),
+        type_of: type_of.to_string(),
+        starting_balance,
+        current_balance: starting_balance,
+        interest_rate,
+        transactions: Vec::new(),
     });
 }
 
@@ -188,11 +188,11 @@ fn log_income() -> (Transaction, u32) {
     let notes = notes.trim();
 
     let income = Transaction::Income {
-        name: (name.to_string()),
-        payee: (payee.to_string()),
-        inflow: (inflow as u32),
-        notes: (notes.to_string()),
-        date: (Local::now()),
+        name: name.to_string(),
+        payee: payee.to_string(),
+        inflow: inflow as u32,
+        notes: notes.to_string(),
+        date: Local::now(),
     };
 
     return (income, inflow as u32);
@@ -223,62 +223,19 @@ fn log_expense() -> (Transaction, u32) {
     let inflow = outflow * -1;
 
     let expense = Transaction::Expense {
-        name: (name.to_string()),
-        payee: (payee.to_string()),
-        inflow: (inflow),
-        outflow: (outflow),
-        notes: (notes.to_string()),
-        date: (Local::now()),
+        name: name.to_string(),
+        payee: payee.to_string(),
+        inflow,
+        outflow,
+        notes: notes.to_string(),
+        date: Local::now(),
     };
 
     return (expense, outflow as u32);
 }
 
-fn display_transactions_assets(asset: &Asset) {
-    println!("Transaction history for {} {}:", asset.name, asset.type_of);
-    println!();
-    for transaction in &asset.transactions {
-        match transaction {
-            Transaction::Income {
-                name,
-                payee,
-                inflow,
-                notes,
-                date,
-            } => {
-                println!("Name: {}", name);
-                println!("Payee: {}", payee);
-                println!("Inflow: ${}", inflow);
-                println!("Notes?: {}", notes);
-                println!("Date: {}", date);
-            }
-            Transaction::Expense {
-                name,
-                payee,
-                inflow,
-                outflow,
-                notes,
-                date,
-            } => {
-                println!("Name: {}", name);
-                println!("Payee: {}", payee);
-                println!("Inflow: ${}", inflow);
-                println!("Outflow: ${}", outflow);
-                println!("Notes?: {}", notes);
-                println!("Date: {}", date);
-            }
-        }
-        println!();
-    }
-}
-
-fn display_transactions_liabilities(liability: &Liability) {
-    println!(
-        "Transaction history for {} {}:",
-        liability.name, liability.type_of
-    );
-    println!();
-    for transaction in &liability.transactions {
+fn display_transactions(transactions: Vec<Transaction>) {
+    for transaction in transactions {
         match transaction {
             Transaction::Income {
                 name,
@@ -320,7 +277,11 @@ fn display_assets(assets: &Vec<Asset>) {
         println!("Starting Balance: ${}", asset.starting_balance);
         println!("Current Balance: ${}", asset.current_balance);
         println!();
-        display_transactions_assets(asset);
+        println!(
+            "Transaction history for {} {}:",
+            asset.name, asset.type_of
+        );
+        display_transactions(asset.transactions.clone());
     }
     println!();
 }
@@ -333,7 +294,11 @@ fn display_liabilities(liabilities: &Vec<Liability>) {
         println!("Current Balance: ${}", liability.current_balance);
         println!("Interest Rate: {}%", liability.interest_rate);
         println!();
-        display_transactions_liabilities(liability);
+        println!(
+            "Transaction history for {} {}:",
+            liability.name, liability.type_of
+        );
+        display_transactions(liability.transactions.clone());
     }
     println!();
 }
